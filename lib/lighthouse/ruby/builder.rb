@@ -14,8 +14,12 @@ module Lighthouse
         @lighthouse_options = Lighthouse::Preferences.lighthouse_options
       end
 
-      def run_test
-        get_test_scores
+      def execute
+        @response = @runner.call("#{@cli} #{options}")
+      end
+
+      def test_scores
+        get_test_scores(@response)
       end
 
       private
@@ -30,9 +34,8 @@ module Lighthouse
         end.strip
       end
 
-      def get_test_scores
-        json_result = JSON.parse(@runner.call("#{@cli} #{options}"))
-
+      def get_test_scores(response)
+        json_result = JSON.parse(response)
         @test_scores = { url: @url}
         @test_scores[:run_time] = Time.now
         @test_scores[:performance] = json_result.dig("categories", "performance" , "score") * 100
