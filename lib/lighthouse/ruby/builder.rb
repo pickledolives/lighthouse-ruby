@@ -5,7 +5,8 @@ module Lighthouse
   module Ruby
     class Builder
 
-      def initialize
+      def initialize(url)
+        @url = url
         @runner = Lighthouse::Preferences.runner
         @cli = Lighthouse::Preferences.lighthouse_cli
         @port = Lighthouse::Preferences.remote_debugging_port
@@ -13,8 +14,8 @@ module Lighthouse
         @lighthouse_options = Lighthouse::Preferences.lighthouse_options
       end
 
-      def execute(url)
-        @response = @runner.call("#{@cli} #{options(url)}")
+      def execute
+        @response = @runner.call("#{@cli} #{options}")
       end
 
       def test_scores
@@ -23,8 +24,8 @@ module Lighthouse
 
       private
 
-      def options(url)
-        "'#{url}'".tap do |builder|
+      def options
+        "'#{@url}'".tap do |builder|
           builder << ' --quiet'
           builder << ' --output=json'
           builder << " --port=#{@port}" if @port
