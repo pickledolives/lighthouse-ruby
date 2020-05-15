@@ -5,6 +5,8 @@ module Lighthouse
   module Ruby
     class Builder
 
+      attr_reader :response
+
       def initialize(url)
         @url = url
         @runner = Lighthouse::Preferences.runner
@@ -16,10 +18,11 @@ module Lighthouse
 
       def execute
         @response = @runner.call("#{@cli} #{options}")
+        get_test_scores(parsed_response)
       end
 
-      def test_scores
-        get_test_scores(@response)
+      def parsed_response
+        @parsed_response = JSON.parse(@response)
       end
 
       private
@@ -35,13 +38,12 @@ module Lighthouse
       end
 
       def get_test_scores(response)
-        json_result = JSON.parse(response)
         @test_scores = { url: @url}
         @test_scores[:run_time] = Time.now
-        @test_scores[:performance] = json_result.dig("categories", "performance" , "score") * 100
-        @test_scores[:accessibility] = json_result.dig("categories", "accessibility" , "score") * 100
-        @test_scores[:best_practices] = json_result.dig("categories", "best-practices" , "score") * 100
-        @test_scores[:seo] = json_result.dig("categories", "seo" , "score") * 100
+        @test_scores[:performance] = response.dig("categories", "performance" , "score") * 100
+        @test_scores[:accessibility] = response.dig("categories", "accessibility" , "score") * 100
+        @test_scores[:best_practices] = response.dig("categories", "best-practices" , "score") * 100
+        @test_scores[:seo] = response.dig("categories", "seo" , "score") * 100
         @test_scores
       end
 
