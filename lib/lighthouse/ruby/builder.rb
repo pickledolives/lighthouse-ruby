@@ -40,10 +40,10 @@ module Lighthouse
       def get_test_scores(response)
         @test_scores = { url: @url}
         @test_scores[:run_time] = Time.now
-        @test_scores[:performance] = response.dig("categories", "performance" , "score") * 100
-        @test_scores[:accessibility] = response.dig("categories", "accessibility" , "score") * 100
-        @test_scores[:best_practices] = response.dig("categories", "best-practices" , "score") * 100
-        @test_scores[:seo] = response.dig("categories", "seo" , "score") * 100
+        @test_scores[:performance] = response.dig("categories", "performance" , "score").to_f * 100
+        @test_scores[:accessibility] = response.dig("categories", "accessibility" , "score").to_f * 100
+        @test_scores[:best_practices] = response.dig("categories", "best-practices" , "score").to_f * 100
+        @test_scores[:seo] = response.dig("categories", "seo" , "score").to_f * 100
         @test_scores
       end
 
