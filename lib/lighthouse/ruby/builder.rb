@@ -18,11 +18,14 @@ module Lighthouse
 
       def execute
         @response = @runner.call("#{@cli} #{options}")
-        get_test_scores(parsed_response)
       end
 
       def parsed_response
-        @parsed_response = JSON.parse(@response)
+        get_test_scores(raw_response)
+      end
+
+      def raw_response
+        JSON.parse(@response)
       end
 
       private
