@@ -21,7 +21,7 @@ module Lighthouse
       end
 
       def parsed_response
-        get_test_scores(raw_response)
+        @test_scores ||= get_test_scores(raw_response)
       end
 
       def raw_response
@@ -41,12 +41,12 @@ module Lighthouse
       end
 
       def get_test_scores(response)
-        @test_scores = { url: @url}
-        @test_scores[:run_time] = Time.now
-        @test_scores[:performance] = response.dig("categories", "performance" , "score").to_f * 100
-        @test_scores[:accessibility] = response.dig("categories", "accessibility" , "score").to_f * 100
-        @test_scores[:best_practices] = response.dig("categories", "best-practices" , "score").to_f * 100
-        @test_scores[:seo] = response.dig("categories", "seo" , "score").to_f * 100
+        @test_scores = { 'url' => @url}
+        @test_scores['version'] = response['lighthouseVersion']
+        @test_scores['time'] = Time.current
+        @test_scores['categories'] = response['categories'].map { |k, v| [k, v["score"].to_f * 100] }.to_h
+        @test_scores['audits'] = response['audits'].map { |k, v| [k, v["score"].to_f * 100] }.to_h
+        @test_scores['screenshot'] = response['audits']['full-page-screenshot']['details']['screenshot']['data']
         @test_scores
       end
 
